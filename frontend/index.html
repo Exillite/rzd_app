@@ -1,0 +1,1227 @@
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>RZD App</title>
+
+        <style>
+            :root {
+                --rzd-red: #d71920;
+                --rzd-red-dark: #b61016;
+                --rzd-red-soft: #fff1f2;
+                --text: #1f2328;
+                --muted: #6b7280;
+                --border: #e5e7eb;
+                --border-strong: #d1d5db;
+                --bg: #f3f4f6;
+                --card: #ffffff;
+                --card-soft: rgba(255, 255, 255, 0.82);
+                --shadow: 0 10px 30px rgba(13, 18, 28, 0.08);
+                --shadow-lg: 0 20px 50px rgba(13, 18, 28, 0.12);
+                --radius: 16px;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                font-family:
+                    Inter,
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    Roboto,
+                    Arial,
+                    sans-serif;
+                color: var(--text);
+                background:
+                    radial-gradient(
+                        circle at top left,
+                        rgba(215, 25, 32, 0.08),
+                        transparent 26%
+                    ),
+                    radial-gradient(
+                        circle at top right,
+                        rgba(17, 24, 39, 0.05),
+                        transparent 24%
+                    ),
+                    linear-gradient(180deg, #fbfbfc 0%, #f3f4f6 100%);
+            }
+
+            .app {
+                width: 100%;
+                max-width: 1120px;
+                margin: 0 auto;
+                padding: 28px 16px 48px;
+            }
+
+            .stack {
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+            }
+
+            .hero {
+                position: relative;
+                overflow: hidden;
+                background:
+                    linear-gradient(
+                        135deg,
+                        rgba(215, 25, 32, 0.05),
+                        rgba(255, 255, 255, 0.92)
+                    ),
+                    var(--card);
+                border: 1px solid rgba(255, 255, 255, 0.85);
+                border-radius: 24px;
+                box-shadow: var(--shadow-lg);
+                padding: 28px;
+            }
+
+            .hero::after {
+                content: "";
+                position: absolute;
+                width: 220px;
+                height: 220px;
+                right: -70px;
+                top: -90px;
+                border-radius: 50%;
+                background: radial-gradient(
+                    circle,
+                    rgba(215, 25, 32, 0.15),
+                    transparent 70%
+                );
+                pointer-events: none;
+            }
+
+            .hero-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 14px;
+                padding: 8px 12px;
+                border-radius: 999px;
+                background: var(--rzd-red-soft);
+                border: 1px solid #fecdd3;
+                color: #9f1239;
+                font-size: 13px;
+                font-weight: 700;
+            }
+
+            .hero h1 {
+                margin: 0;
+                font-size: 34px;
+                line-height: 1.08;
+                letter-spacing: -0.02em;
+                max-width: 620px;
+            }
+
+            .hero p {
+                margin: 12px 0 0;
+                color: var(--muted);
+                max-width: 640px;
+                font-size: 15px;
+                line-height: 1.6;
+            }
+
+            .hero-chips {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 18px;
+            }
+
+            .hero-chip {
+                display: inline-flex;
+                align-items: center;
+                padding: 10px 12px;
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.8);
+                border: 1px solid rgba(229, 231, 235, 0.9);
+                color: #374151;
+                font-size: 13px;
+                font-weight: 600;
+                backdrop-filter: blur(8px);
+            }
+
+            .search-card {
+                background: var(--card-soft);
+                border: 1px solid rgba(255, 255, 255, 0.9);
+                border-radius: 24px;
+                box-shadow: var(--shadow-lg);
+                padding: 20px;
+                backdrop-filter: blur(12px);
+            }
+
+            .search-card-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .search-card-title {
+                margin: 0;
+                font-size: 20px;
+                font-weight: 700;
+            }
+
+            .search-card-subtitle {
+                color: var(--muted);
+                font-size: 14px;
+            }
+
+            .search-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr 180px 160px;
+                gap: 12px;
+                align-items: end;
+            }
+
+            .search-grid-no-date {
+                grid-template-columns: 1fr 1fr 160px;
+            }
+
+            .field {
+                position: relative;
+                z-index: 20;
+            }
+
+            .field:focus-within {
+                z-index: 200;
+            }
+
+            .label {
+                display: block;
+                margin-bottom: 6px;
+                font-size: 13px;
+                color: var(--muted);
+            }
+
+            input,
+            button {
+                width: 100%;
+                border-radius: 14px;
+                border: 1px solid var(--border);
+                padding: 14px 16px;
+                font-size: 15px;
+                line-height: 1.2;
+                outline: none;
+                transition:
+                    border-color 0.2s,
+                    box-shadow 0.2s,
+                    transform 0.08s,
+                    background 0.2s;
+            }
+
+            input {
+                background: rgba(255, 255, 255, 0.98);
+            }
+
+            input::placeholder {
+                color: #9ca3af;
+            }
+
+            input:focus {
+                border-color: var(--rzd-red);
+                box-shadow: 0 0 0 4px rgba(215, 25, 32, 0.12);
+            }
+
+            button {
+                background: linear-gradient(
+                    180deg,
+                    var(--rzd-red) 0%,
+                    var(--rzd-red-dark) 100%
+                );
+                color: #fff;
+                border-color: transparent;
+                font-weight: 700;
+                cursor: pointer;
+                box-shadow: 0 12px 24px rgba(215, 25, 32, 0.24);
+            }
+
+            button:hover {
+                background: var(--rzd-red-dark);
+                border-color: var(--rzd-red-dark);
+            }
+
+            button:disabled {
+                cursor: wait;
+                opacity: 0.8;
+                box-shadow: none;
+            }
+
+            button:active {
+                transform: translateY(1px);
+            }
+
+            .dropdown {
+                margin-top: 6px;
+                position: absolute;
+                left: 0;
+                right: 0;
+                background: #fff;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+                max-height: 260px;
+                overflow-y: auto;
+                z-index: 500;
+            }
+
+            .dropdown:empty {
+                display: none;
+            }
+
+            .dropdown div {
+                padding: 12px 14px;
+                cursor: pointer;
+                border-bottom: 1px solid #f0f2f5;
+                font-size: 14px;
+                transition:
+                    background 0.15s,
+                    color 0.15s;
+            }
+
+            .dropdown div:last-child {
+                border-bottom: none;
+            }
+
+            .dropdown div:hover {
+                background: #f9fafb;
+            }
+
+            .results-section {
+                display: flex;
+                flex-direction: column;
+                gap: 14px;
+            }
+
+            .results-section.hidden {
+                display: none;
+            }
+
+            .results-title {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 2px;
+            }
+
+            .results-title h2 {
+                margin: 0;
+                font-size: 24px;
+                line-height: 1.15;
+            }
+
+            .results-title .muted {
+                color: var(--muted);
+                font-size: 14px;
+            }
+
+            .results-subtitle {
+                color: var(--muted);
+                font-size: 14px;
+                margin-top: 4px;
+            }
+
+            .results-panel {
+                background: rgba(255, 255, 255, 0.78);
+                border: 1px solid rgba(255, 255, 255, 0.9);
+                border-radius: 24px;
+                box-shadow: var(--shadow-lg);
+                padding: 18px;
+                backdrop-filter: blur(12px);
+            }
+
+            .presearch-state {
+                background: rgba(255, 255, 255, 0.78);
+                border: 1px solid rgba(255, 255, 255, 0.9);
+                border-radius: 24px;
+                box-shadow: var(--shadow-lg);
+                padding: 28px;
+                text-align: center;
+                color: var(--muted);
+            }
+
+            .presearch-icon {
+                width: 68px;
+                height: 68px;
+                margin: 0 auto 16px;
+                border-radius: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 30px;
+                background: linear-gradient(180deg, #fff1f2 0%, #ffffff 100%);
+                border: 1px solid #fecdd3;
+                box-shadow: 0 10px 24px rgba(215, 25, 32, 0.12);
+            }
+
+            .presearch-title {
+                margin: 0 0 8px;
+                color: var(--text);
+                font-size: 22px;
+            }
+
+            .presearch-text {
+                margin: 0 auto;
+                max-width: 520px;
+                line-height: 1.6;
+            }
+
+            .trains-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 14px;
+            }
+
+            .train-card {
+                position: relative;
+                overflow: hidden;
+                background: linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0.98),
+                    rgba(249, 250, 251, 0.96)
+                );
+                border: 1px solid rgba(255, 255, 255, 0.95);
+                border-radius: 18px;
+                padding: 16px;
+                box-shadow: var(--shadow);
+                cursor: pointer;
+                transition:
+                    transform 0.12s,
+                    box-shadow 0.2s,
+                    border-color 0.2s;
+                border-left: 6px solid var(--rzd-red);
+            }
+
+            .train-card::after {
+                content: "→";
+                position: absolute;
+                right: 16px;
+                top: 16px;
+                color: #d1d5db;
+                font-size: 18px;
+                font-weight: 700;
+                transition:
+                    transform 0.15s,
+                    color 0.15s;
+            }
+
+            .train-card:hover {
+                transform: translateY(-3px);
+                border-color: #fbc2c4;
+                box-shadow: 0 18px 34px rgba(0, 0, 0, 0.1);
+            }
+
+            .train-card:hover::after {
+                transform: translateX(3px);
+                color: var(--rzd-red);
+            }
+
+            .train-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+                margin-bottom: 8px;
+            }
+
+            .train-number {
+                font-size: 20px;
+                font-weight: 700;
+            }
+
+            .pill {
+                display: inline-flex;
+                align-items: center;
+                background: #fff1f2;
+                border: 1px solid #fecdd3;
+                color: #9f1239;
+                border-radius: 999px;
+                padding: 5px 10px;
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+            .train-route {
+                font-weight: 600;
+                margin: 4px 0;
+            }
+
+            .train-time {
+                color: var(--muted);
+                font-size: 14px;
+            }
+
+            .empty {
+                background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+                border: 1px dashed #d1d5db;
+                border-radius: 18px;
+                padding: 24px;
+                color: var(--muted);
+                text-align: center;
+            }
+
+            .route-overlay {
+                position: fixed;
+                inset: 0;
+                background: #ffffff;
+                z-index: 1000;
+                display: none;
+                overflow-y: auto;
+            }
+
+            .route-overlay.open {
+                display: block;
+            }
+
+            .route-shell {
+                width: 100%;
+                max-width: 980px;
+                margin: 0 auto;
+                padding: 18px 16px 40px;
+            }
+
+            .route-header {
+                position: sticky;
+                top: 0;
+                z-index: 5;
+                background: rgba(255, 255, 255, 0.92);
+                backdrop-filter: blur(8px);
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                box-shadow: var(--shadow);
+                padding: 12px;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 16px;
+            }
+
+            .back-btn {
+                width: auto;
+                padding: 10px 14px;
+                border-radius: 10px;
+                font-size: 14px;
+                background: #fff;
+                color: var(--text);
+                border: 1px solid var(--border);
+            }
+
+            .back-btn:hover {
+                background: #f9fafb;
+                border-color: #d1d5db;
+            }
+
+            .route-title-wrap h3 {
+                margin: 0;
+                font-size: 20px;
+            }
+
+            .route-meta {
+                margin-top: 4px;
+                color: var(--muted);
+                font-size: 14px;
+            }
+
+            .timeline {
+                list-style: none;
+                margin: 0;
+                padding: 12px 0 0;
+                position: relative;
+            }
+
+            .timeline-item {
+                position: relative;
+                padding-left: 52px;
+                margin-bottom: 16px;
+            }
+
+            .timeline-item::before {
+                content: "";
+                position: absolute;
+                left: 19px;
+                top: -16px;
+                bottom: -16px;
+                width: 2px;
+                background: #d1d5db;
+            }
+
+            .timeline-item:first-child::before {
+                top: 16px;
+            }
+
+            .timeline-item:last-child::before {
+                bottom: calc(100% - 16px);
+            }
+
+            .timeline-item.is-past::before,
+            .timeline-item.is-current::before {
+                background: var(--rzd-red);
+            }
+
+            .timeline-dot {
+                position: absolute;
+                left: 10px;
+                top: 6px;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: #9ca3af;
+                border: 4px solid #f3f4f6;
+                box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.12);
+            }
+
+            .timeline-item.is-past .timeline-dot,
+            .timeline-item.is-current .timeline-dot {
+                background: var(--rzd-red);
+                border-color: #ffe4e6;
+                box-shadow: 0 0 0 3px rgba(215, 25, 32, 0.12);
+            }
+
+            .timeline-item.is-current .timeline-dot {
+                transform: scale(1.08);
+            }
+
+            .timeline-card {
+                background: #fff;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 12px;
+                box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+            }
+
+            .timeline-name {
+                font-weight: 700;
+                margin-bottom: 8px;
+            }
+
+            .timeline-times {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .time-chip {
+                border: 1px solid #e5e7eb;
+                background: #f9fafb;
+                border-radius: 999px;
+                font-size: 13px;
+                padding: 4px 10px;
+                color: #374151;
+            }
+
+            .loading {
+                color: var(--muted);
+                padding: 10px 0;
+            }
+
+            @media (max-width: 960px) {
+                .search-grid,
+                .search-grid-no-date {
+                    grid-template-columns: 1fr 1fr;
+                }
+            }
+
+            @media (max-width: 640px) {
+                .app {
+                    padding: 14px 12px 30px;
+                }
+
+                .hero {
+                    padding: 22px;
+                }
+
+                .hero h1 {
+                    font-size: 28px;
+                }
+
+                .search-card-top {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                .search-grid,
+                .search-grid-no-date {
+                    grid-template-columns: 1fr;
+                }
+
+                .trains-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .route-shell {
+                    padding: 12px;
+                }
+
+                .timeline::before {
+                    left: 15px;
+                }
+
+                .timeline-item {
+                    padding-left: 42px;
+                }
+
+                .timeline-dot {
+                    left: 6px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main class="app">
+            <div class="stack">
+                <section class="hero">
+                    <div class="hero-badge">● Онлайн-поиск маршрутов РЖД</div>
+                    <h1>Быстрый и удобный поиск поездов между станциями</h1>
+                    <p>
+                        Выберите станции отправления и прибытия — приложение
+                        покажет только рейсы с доступным маршрутом и позволит
+                        открыть красивый вертикальный таймлайн движения.
+                    </p>
+                    <div class="hero-chips">
+                        <span class="hero-chip">Актуальная дата — сегодня</span>
+                        <span class="hero-chip"
+                            >Только рейсы с доступным маршрутом</span
+                        >
+                        <span class="hero-chip"
+                            >Полноэкранный просмотр маршрута</span
+                        >
+                    </div>
+                </section>
+
+                <section class="search-card">
+                    <div class="search-card-top">
+                        <div>
+                            <h2 class="search-card-title">Параметры поиска</h2>
+                            <div class="search-card-subtitle">
+                                Начни вводить название станции и выбери
+                                подходящий вариант из списка.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-grid search-grid-no-date">
+                        <div class="field">
+                            <label class="label" for="from"
+                                >Станция отправления</label
+                            >
+                            <input
+                                id="from"
+                                placeholder="Например, Москва"
+                                autocomplete="off"
+                            />
+                            <div id="from-list" class="dropdown"></div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label" for="to"
+                                >Станция прибытия</label
+                            >
+                            <input
+                                id="to"
+                                placeholder="Например, Санкт-Петербург"
+                                autocomplete="off"
+                            />
+                            <div id="to-list" class="dropdown"></div>
+                        </div>
+
+                        <div>
+                            <label class="label">&nbsp;</label>
+                            <button id="search-button" onclick="searchTrains()">
+                                Найти поезда
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="presearch-state" class="presearch-state">
+                    <div class="presearch-icon">🚆</div>
+                    <h2 class="presearch-title">Выберите станции для поиска</h2>
+                    <p class="presearch-text">
+                        После запуска поиска здесь появятся подходящие поезда.
+                        До этого блок результатов скрыт, чтобы интерфейс
+                        оставался чистым и удобным.
+                    </p>
+                </section>
+
+                <section id="results-section" class="results-section hidden">
+                    <div class="results-title">
+                        <div>
+                            <h2 id="results-heading">Результаты поиска</h2>
+                            <div class="results-subtitle">
+                                Доступные поезда с загруженным маршрутом
+                            </div>
+                        </div>
+                        <span id="results-info" class="muted"></span>
+                    </div>
+                    <div class="results-panel">
+                        <div id="trains" class="trains-grid"></div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <div id="route-overlay" class="route-overlay" aria-hidden="true">
+            <div class="route-shell">
+                <div class="route-header">
+                    <button id="close-route" class="back-btn">
+                        ← Назад к списку
+                    </button>
+                    <div class="route-title-wrap">
+                        <h3 id="route-title">Маршрут</h3>
+                        <div id="route-meta" class="route-meta"></div>
+                    </div>
+                </div>
+
+                <div id="route-content"></div>
+            </div>
+        </div>
+
+        <script type="module">
+            import RzdApiClient from "./rzdApiClient.js";
+
+            const api = new RzdApiClient();
+
+            let selectedFrom = null;
+            let selectedTo = null;
+            const routeCache = new Map();
+
+            const fromInput = document.getElementById("from");
+            const toInput = document.getElementById("to");
+            const fromList = document.getElementById("from-list");
+            const toList = document.getElementById("to-list");
+            const trainsContainer = document.getElementById("trains");
+            const resultsInfo = document.getElementById("results-info");
+            const resultsSection = document.getElementById("results-section");
+            const resultsHeading = document.getElementById("results-heading");
+            const presearchState = document.getElementById("presearch-state");
+            const searchButton = document.getElementById("search-button");
+
+            const routeOverlay = document.getElementById("route-overlay");
+            const routeTitle = document.getElementById("route-title");
+            const routeMeta = document.getElementById("route-meta");
+            const routeContent = document.getElementById("route-content");
+            const closeRouteBtn = document.getElementById("close-route");
+
+            function getTodayApiDate() {
+                const today = new Date();
+                const day = String(today.getDate()).padStart(2, "0");
+                const month = String(today.getMonth() + 1).padStart(2, "0");
+                const year = today.getFullYear();
+                return `${day}.${month}.${year}`;
+            }
+
+            function showResultsSection() {
+                resultsSection.classList.remove("hidden");
+                presearchState.style.display = "none";
+            }
+
+            function setSearchButtonLoading(isLoading) {
+                searchButton.disabled = isLoading;
+                searchButton.textContent = isLoading
+                    ? "Идёт поиск..."
+                    : "Найти поезда";
+            }
+
+            // --------------------
+            // 🔍 Поиск станций
+            // --------------------
+            async function handleSearch(inputEl, listEl, setter) {
+                const query = inputEl.value.trim();
+
+                if (query.length < 1) {
+                    listEl.innerHTML = "";
+                    return;
+                }
+
+                const stations = await api.searchStations(query);
+                listEl.innerHTML = "";
+
+                const queryLower = query.toLowerCase();
+
+                function normalize(text) {
+                    return (text || "").toLowerCase();
+                }
+
+                function computeSearchScore(station) {
+                    if (typeof station.suWeight === "number") {
+                        return station.suWeight;
+                    }
+
+                    const name = normalize(station.searchName);
+                    if (!name) return 0;
+
+                    if (name === queryLower) return 12;
+                    if (name.startsWith(queryLower)) return 10;
+
+                    const words = name.split(/[^а-яa-z0-9]+/);
+                    if (words.some((word) => word.startsWith(queryLower)))
+                        return 8;
+
+                    const index = name.indexOf(queryLower);
+                    if (index !== -1) return 6 - Math.min(index, 4) * 0.5;
+
+                    return 0;
+                }
+
+                function computeDetailScore(station) {
+                    if (typeof station.dtWeight === "number") {
+                        return station.dtWeight;
+                    }
+
+                    const name = normalize(station.searchName);
+                    if (!name) return 0;
+
+                    const index = name.indexOf(queryLower);
+                    let score = 0;
+                    if (index === 0) score += 3;
+                    else if (index > 0) score += 2;
+
+                    score += Math.max(0, 5 - station.searchName.length / 10);
+                    return score;
+                }
+
+                function getStationRank(station) {
+                    const name = normalize(station.searchName);
+                    const index = name.indexOf(queryLower);
+                    const startsWith = name.startsWith(queryLower) ? 1 : 0;
+                    const exactMatch = name === queryLower ? 1 : 0;
+
+                    return {
+                        primary:
+                            computeSearchScore(station) * 100 +
+                            exactMatch * 20 +
+                            startsWith * 10,
+                        secondary:
+                            computeDetailScore(station) * 10 +
+                            (index === -1 ? 0 : 5 - Math.min(index, 4)),
+                        tertiary: 100 - (station.searchName || "").length,
+                    };
+                }
+
+                stations.sort((a, b) => {
+                    const aRank = getStationRank(a);
+                    const bRank = getStationRank(b);
+
+                    if (aRank.primary !== bRank.primary) {
+                        return bRank.primary - aRank.primary;
+                    }
+                    if (aRank.secondary !== bRank.secondary) {
+                        return bRank.secondary - aRank.secondary;
+                    }
+                    if (aRank.tertiary !== bRank.tertiary) {
+                        return bRank.tertiary - aRank.tertiary;
+                    }
+
+                    return (a.searchName || "").localeCompare(
+                        b.searchName || "",
+                        "ru",
+                    );
+                });
+
+                stations.forEach((st) => {
+                    const div = document.createElement("div");
+                    div.textContent =
+                        st.compositeRegion == null || st.compositeRegion === ""
+                            ? st.searchName
+                            : `${st.searchName} (${st.compositeRegion})`;
+
+                    div.onclick = () => {
+                        inputEl.value = st.searchName;
+                        setter(st);
+                        listEl.innerHTML = "";
+                    };
+
+                    listEl.appendChild(div);
+                });
+            }
+
+            // debounce
+            let timeout;
+            function debounce(fn) {
+                clearTimeout(timeout);
+                timeout = setTimeout(fn, 250);
+            }
+
+            fromInput.addEventListener("input", () => {
+                selectedFrom = null;
+                debounce(() =>
+                    handleSearch(
+                        fromInput,
+                        fromList,
+                        (st) => (selectedFrom = st),
+                    ),
+                );
+            });
+
+            toInput.addEventListener("input", () => {
+                selectedTo = null;
+                debounce(() =>
+                    handleSearch(toInput, toList, (st) => (selectedTo = st)),
+                );
+            });
+
+            document.addEventListener("click", (e) => {
+                const isFromClick =
+                    e.target === fromInput || fromList.contains(e.target);
+                const isToClick =
+                    e.target === toInput || toList.contains(e.target);
+                if (!isFromClick) fromList.innerHTML = "";
+                if (!isToClick) toList.innerHTML = "";
+            });
+
+            function getRouteLookupDate(train) {
+                const apiDateRaw =
+                    train.arrivalStation?.localDateTime?.split(" ")[0];
+                if (!apiDateRaw) {
+                    return null;
+                }
+
+                return apiDateRaw.split(".").reverse().join("-");
+            }
+
+            function getRouteCacheKey(train) {
+                const routeDate = getRouteLookupDate(train);
+                if (!routeDate || !train.trainNumberLatin) {
+                    return null;
+                }
+
+                return `${train.trainNumberLatin}_${routeDate}`;
+            }
+
+            async function preloadTrainRoutes(trains) {
+                const routeRequests = trains.map(async (train) => {
+                    const routeDate = getRouteLookupDate(train);
+                    const cacheKey = getRouteCacheKey(train);
+
+                    if (!routeDate || !cacheKey) {
+                        return null;
+                    }
+
+                    if (routeCache.has(cacheKey)) {
+                        return {
+                            train,
+                            route: routeCache.get(cacheKey),
+                        };
+                    }
+
+                    try {
+                        const route = await api.getTrainRoute(
+                            train.trainNumberLatin,
+                            routeDate,
+                        );
+
+                        routeCache.set(cacheKey, route);
+
+                        return {
+                            train,
+                            route,
+                        };
+                    } catch (e) {
+                        return null;
+                    }
+                });
+
+                const resolvedRoutes = await Promise.all(routeRequests);
+                return resolvedRoutes.filter(
+                    (item) =>
+                        item && Array.isArray(item.route) && item.route.length,
+                );
+            }
+
+            // --------------------
+            // 🚆 Поиск поездов
+            // --------------------
+            window.searchTrains = async function () {
+                if (!selectedFrom || !selectedTo) {
+                    alert("Выбери станции из выпадающего списка");
+                    return;
+                }
+
+                const date = getTodayApiDate();
+                showResultsSection();
+                setSearchButtonLoading(true);
+                resultsHeading.textContent = `${selectedFrom.searchName || "—"} → ${selectedTo.searchName || "—"}`;
+                trainsContainer.innerHTML = `<div class="empty">Идёт поиск поездов и маршрутов...</div>`;
+                resultsInfo.textContent = "";
+
+                try {
+                    const trains = await api.getTrains(
+                        date,
+                        selectedFrom.id,
+                        selectedTo.id,
+                    );
+
+                    const trainsWithRoutes = await preloadTrainRoutes(trains);
+                    renderTrains(trainsWithRoutes.map((item) => item.train));
+                } catch (e) {
+                    resultsInfo.textContent = "";
+                    trainsContainer.innerHTML = `<div class="empty">Не удалось загрузить список поездов.</div>`;
+                } finally {
+                    setSearchButtonLoading(false);
+                }
+            };
+
+            // --------------------
+            // 📋 Рендер поездов
+            // --------------------
+            function renderTrains(trains) {
+                trainsContainer.innerHTML = "";
+
+                if (!trains.length) {
+                    resultsInfo.textContent = "0 результатов";
+                    trainsContainer.innerHTML = `<div class="empty">Ничего не найдено. Попробуй изменить станции отправления или прибытия.</div>`;
+                    return;
+                }
+
+                resultsInfo.textContent = `Найдено: ${trains.length}`;
+
+                trains.forEach((train) => {
+                    const card = document.createElement("article");
+                    card.className = "train-card";
+
+                    card.innerHTML = `
+                        <div class="train-top">
+                            <div class="train-number">${train.trainNumberRus || "—"}</div>
+                            <span class="pill">Маршрут</span>
+                        </div>
+                        <div class="train-route">${train.departureStation?.name || "—"} → ${train.arrivalStation?.name || "—"}</div>
+                        <div class="train-time">${train.departureStation?.localDateTime || "—"} → ${train.arrivalStation?.localDateTime || "—"}</div>
+                    `;
+
+                    card.onclick = () => loadRoute(train);
+                    trainsContainer.appendChild(card);
+                });
+            }
+
+            // --------------------
+            // 🗺 Полноэкранный маршрут
+            // --------------------
+            function openRouteOverlay() {
+                routeOverlay.classList.add("open");
+                routeOverlay.setAttribute("aria-hidden", "false");
+                document.body.style.overflow = "hidden";
+            }
+
+            function closeRouteOverlay() {
+                routeOverlay.classList.remove("open");
+                routeOverlay.setAttribute("aria-hidden", "true");
+                document.body.style.overflow = "";
+            }
+
+            closeRouteBtn.addEventListener("click", closeRouteOverlay);
+
+            document.addEventListener("keydown", (e) => {
+                if (
+                    e.key === "Escape" &&
+                    routeOverlay.classList.contains("open")
+                ) {
+                    closeRouteOverlay();
+                }
+            });
+
+            async function loadRoute(train) {
+                openRouteOverlay();
+
+                routeTitle.textContent = `Поезд ${train.trainNumberRus || train.trainNumberLatin || ""}`;
+                routeMeta.textContent = `${train.departureStation?.name || "—"} → ${train.arrivalStation?.name || "—"}`;
+                routeContent.innerHTML = `<div class="loading">Загружаю маршрут...</div>`;
+
+                try {
+                    const cacheKey = getRouteCacheKey(train);
+                    if (!cacheKey) {
+                        routeContent.innerHTML = `<div class="empty">Не удалось определить дату для загрузки маршрута.</div>`;
+                        return;
+                    }
+
+                    let route = routeCache.get(cacheKey);
+
+                    if (!route) {
+                        const routeDate = getRouteLookupDate(train);
+                        route = await api.getTrainRoute(
+                            train.trainNumberLatin,
+                            routeDate,
+                        );
+                        routeCache.set(cacheKey, route);
+                    }
+
+                    renderRouteTimeline(route);
+                } catch (e) {
+                    routeContent.innerHTML = `<div class="empty">Не удалось загрузить маршрут. Попробуй ещё раз.</div>`;
+                }
+            }
+
+            function renderRouteTimeline(route) {
+                if (!Array.isArray(route) || route.length === 0) {
+                    routeContent.innerHTML = `<div class="empty">Маршрут пустой или недоступен.</div>`;
+                    return;
+                }
+
+                const currentStationIndex = route.findIndex(
+                    (station) => station.current_station === true,
+                );
+
+                const list = document.createElement("ul");
+                list.className = "timeline";
+
+                route.forEach((st, index) => {
+                    const item = document.createElement("li");
+                    item.className = "timeline-item";
+
+                    if (currentStationIndex !== -1) {
+                        if (index < currentStationIndex) {
+                            item.classList.add("is-past");
+                        } else if (index === currentStationIndex) {
+                            item.classList.add("is-current");
+                        }
+                    } else {
+                        item.classList.add("is-past");
+                    }
+
+                    const dot = document.createElement("span");
+                    dot.className = "timeline-dot";
+
+                    const card = document.createElement("div");
+                    card.className = "timeline-card";
+
+                    const name = document.createElement("div");
+                    name.className = "timeline-name";
+                    name.textContent = st.name || "Станция";
+
+                    const times = document.createElement("div");
+                    times.className = "timeline-times";
+
+                    const arrChip = document.createElement("span");
+                    arrChip.className = "time-chip";
+                    arrChip.textContent = `Прибытие: ${st.arrivalTime || "--"}`;
+
+                    const depChip = document.createElement("span");
+                    depChip.className = "time-chip";
+                    depChip.textContent = `Отправление: ${st.departureTime || "--"}`;
+
+                    times.appendChild(arrChip);
+                    times.appendChild(depChip);
+                    card.appendChild(name);
+                    card.appendChild(times);
+
+                    item.appendChild(dot);
+                    item.appendChild(card);
+                    list.appendChild(item);
+                });
+
+                routeContent.innerHTML = "";
+                routeContent.appendChild(list);
+            }
+        </script>
+    </body>
+</html>

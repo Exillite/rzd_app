@@ -1,0 +1,12 @@
+{
+  "name": "rzd-frontend",
+  "version": "1.0.0",
+  "description": "RZD Frontend",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "chokidar": "^3.5.3"
+  }
+}

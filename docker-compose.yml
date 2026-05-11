@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  rzd-api:
+    build: ./backend
+    container_name: rzd-api
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: rzd-frontend
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    restart: unless-stopped
