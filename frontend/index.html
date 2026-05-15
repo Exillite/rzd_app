@@ -192,7 +192,8 @@
                 z-index: 20;
             }
 
-            .field:focus-within {
+            .field:focus-within,
+            .field.dropdown-open {
                 z-index: 200;
             }
 
@@ -853,8 +854,14 @@
                     : "Найти поезда";
             }
 
+            function setDropdownOpenState(listEl, isOpen) {
+                const fieldEl = listEl === fromList ? fromField : toField;
+                fieldEl.classList.toggle("dropdown-open", isOpen);
+            }
+
             function clearDropdown(listEl) {
                 listEl.innerHTML = "";
+                setDropdownOpenState(listEl, false);
             }
 
             function closeAllDropdowns() {
@@ -980,11 +987,12 @@
                         selectStation(inputEl, listEl, setter, st);
                     };
 
-                    option.addEventListener("pointerdown", chooseOption);
                     option.addEventListener("click", chooseOption);
 
                     listEl.appendChild(option);
                 });
+
+                setDropdownOpenState(listEl, stations.length > 0);
             }
 
             // debounce
