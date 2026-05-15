@@ -272,6 +272,9 @@
                 box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
                 max-height: 260px;
                 overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
+                touch-action: pan-y;
                 z-index: 500;
             }
 
@@ -279,22 +282,37 @@
                 display: none;
             }
 
-            .dropdown div {
+            .dropdown-option {
+                display: block;
+                width: 100%;
+                text-align: left;
                 padding: 12px 14px;
                 cursor: pointer;
+                border: 0;
                 border-bottom: 1px solid #f0f2f5;
+                border-radius: 0;
+                background: #fff;
+                color: var(--text);
                 font-size: 14px;
+                font-weight: 500;
+                box-shadow: none;
                 transition:
                     background 0.15s,
                     color 0.15s;
             }
 
-            .dropdown div:last-child {
+            .dropdown-option:last-child {
                 border-bottom: none;
             }
 
-            .dropdown div:hover {
+            .dropdown-option:hover,
+            .dropdown-option:focus-visible {
                 background: #f9fafb;
+            }
+
+            .dropdown-option:active {
+                transform: none;
+                background: #fff1f2;
             }
 
             .results-section {
@@ -800,6 +818,8 @@
             const toInput = document.getElementById("to");
             const fromList = document.getElementById("from-list");
             const toList = document.getElementById("to-list");
+            const fromField = fromInput.closest(".field");
+            const toField = toInput.closest(".field");
             const trainsContainer = document.getElementById("trains");
             const resultsInfo = document.getElementById("results-info");
             const resultsSection = document.getElementById("results-section");
@@ -833,6 +853,22 @@
                     : "Найти поезда";
             }
 
+            function clearDropdown(listEl) {
+                listEl.innerHTML = "";
+            }
+
+            function closeAllDropdowns() {
+                clearDropdown(fromList);
+                clearDropdown(toList);
+            }
+
+            function selectStation(inputEl, listEl, setter, station) {
+                inputEl.value = station.searchName;
+                setter(station);
+                clearDropdown(listEl);
+                inputEl.blur();
+            }
+
             // --------------------
             // 🔍 Поиск станций
             // --------------------
@@ -840,12 +876,12 @@
                 const query = inputEl.value.trim();
 
                 if (query.length < 1) {
-                    listEl.innerHTML = "";
+                    clearDropdown(listEl);
                     return;
                 }
 
                 const stations = await api.searchStations(query);
-                listEl.innerHTML = "";
+                clearDropdown(listEl);
 
                 const queryLower = query.toLowerCase();
 
@@ -930,19 +966,24 @@
                 });
 
                 stations.forEach((st) => {
-                    const div = document.createElement("div");
-                    div.textContent =
+                    const option = document.createElement("button");
+                    option.type = "button";
+                    option.className = "dropdown-option";
+                    option.textContent =
                         st.compositeRegion == null || st.compositeRegion === ""
                             ? st.searchName
                             : `${st.searchName} (${st.compositeRegion})`;
 
-                    div.onclick = () => {
-                        inputEl.value = st.searchName;
-                        setter(st);
-                        listEl.innerHTML = "";
+                    const chooseOption = (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        selectStation(inputEl, listEl, setter, st);
                     };
 
-                    listEl.appendChild(div);
+                    option.addEventListener("pointerdown", chooseOption);
+                    option.addEventListener("click", chooseOption);
+
+                    listEl.appendChild(option);
                 });
             }
 
@@ -971,13 +1012,38 @@
                 );
             });
 
-            document.addEventListener("click", (e) => {
-                const isFromClick =
-                    e.target === fromInput || fromList.contains(e.target);
-                const isToClick =
-                    e.target === toInput || toList.contains(e.target);
-                if (!isFromClick) fromList.innerHTML = "";
-                if (!isToClick) toList.innerHTML = "";
+            fromInput.addEventListener("focus", () => {
+                if (fromInput.value.trim()) {
+                    debounce(() =>
+                        handleSearch(
+                            fromInput,
+                            fromList,
+                            (st) => (selectedFrom = st),
+                        ),
+                    );
+                }
+            });
+
+            toInput.addEventListener("focus", () => {
+                if (toInput.value.trim()) {
+                    debounce(() =>
+                        handleSearch(
+                            toInput,
+                            toList,
+                            (st) => (selectedTo = st),
+                        ),
+                    );
+                }
+            });
+
+            document.addEventListener("pointerdown", (e) => {
+                if (!fromField.contains(e.target)) {
+                    clearDropdown(fromList);
+                }
+
+                if (!toField.contains(e.target)) {
+                    clearDropdown(toList);
+                }
             });
 
             function getRouteLookupDate(train) {
