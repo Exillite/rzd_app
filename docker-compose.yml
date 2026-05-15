@@ -1,19 +1,30 @@
 version: "3.9"
 
 services:
+  npm:
+    image: "jc21/nginx-proxy-manager:latest"
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+
+    ports:
+      - "80:80"
+      - "81:81"
+      - "443:443"
+
+    volumes:
+      - ./npm/data:/data
+      - ./npm/letsencrypt:/etc/letsencrypt
+
   rzd-api:
     build: ./backend
     container_name: rzd-api
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     restart: unless-stopped
 
   frontend:
     build: ./frontend
     container_name: rzd-frontend
-    ports:
-      - "80:80"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+    expose:
+      - "80"
     restart: unless-stopped
