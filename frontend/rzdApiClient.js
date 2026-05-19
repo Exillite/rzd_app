@@ -1,8 +1,6 @@
 class RzdApiClient {
   constructor(baseURL) {
-    this.baseURL =
-      baseURL ||
-      `${window.location.protocol}//${window.location.hostname}:8000`;
+    this.baseURL = baseURL || "https://api.мойпуть24.рф";
   }
 
   async request(url, options = {}) {
@@ -77,7 +75,7 @@ export default RzdApiClient;
 <script type="module">
 import RzdApiClient from './rzdApiClient.js';
 
-const api = new RzdApiClient("http://localhost:8000");
+const api = new RzdApiClient("https://api.мойпуть24.рф");
 
 // Поиск станций
 const stations = await api.searchStations("см");
